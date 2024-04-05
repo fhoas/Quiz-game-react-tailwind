@@ -1,16 +1,20 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import Result from '../pages/results';
-import { useParams, useNavigate } from 'react-router-dom';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
-const QuizCard = ({ setScore, score}) => {
+const QuizCard = ({ setScore, score }) => {
   const { difficulty, amount, category } = useParams();
   const [questionsData, setQuestionsData] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [count, setCount] = useState(0);
-  const [modal, setModal] = useState(false);
   const [timer, setTimer] = useState(30);
   const navigate = useNavigate();
+
+  const decodeEntities = (encodedString) => {
+    const textArea = document.createElement("textarea");
+    textArea.innerHTML = encodedString;
+    return textArea.value;
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,17 +33,23 @@ const QuizCard = ({ setScore, score}) => {
     }
   }, [timer]);
 
-
   useEffect(() => {
-    const url = `https://opentdb.com/api.php?amount=${amount}&category=${category}&difficulty=${difficulty}&type=multiple`;
-    axios
-      .get(url)
-      .then((res) => {
-        setQuestionsData(res.data.results);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    if (amount && category && difficulty) {
+      const url = `https://opentdb.com/api.php?amount=${amount}&category=${category}&difficulty=${difficulty}&type=multiple`;
+      axios
+        .get(url)
+        .then((res) => {
+          const cleanedQuestionsData = res.data.results.map((question) => ({
+            ...question,
+            question: decodeEntities(question.question),
+            incorrect_answers: question.incorrect_answers.map(decodeEntities),
+          }));
+          setQuestionsData(cleanedQuestionsData);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }, [amount, category, difficulty]);
 
   useEffect(() => {
@@ -81,19 +91,29 @@ const QuizCard = ({ setScore, score}) => {
   return (
     <>
       {questionsData.length > 0 && (
-        <div className='w-[800px] h-fit flex gap-8 p-12 items-center justify-center bg-[#343a40] rounded-lg flex-col'>
-          <div className='flex justify-center text-xl font-bold w-1/4 bg-[#212529] p-4 rounded-lg'>
-            {timer}
+        <div className="w-[90%] sm:w-[600px] md:w-[800px] h-fit flex gap-4 sm:gap-8 p-6 m-4 sm:p-12 items-center justify-center bg-[#1f1f1f] border border-[#666] rounded-[5px] flex-col">
+          <div className="flex justify-between items-center gap-2 w-[100%] h-fit">
+            <div className="flex justify-center items-center sm:text-xl font-bold w-1/4 bg-[#1f1f1f] border border-[#666] p-4 rounded-[5px]">
+              {count + 1}/{amount}
+            </div>
+            <div className="flex justify-center sm:text-xl font-bold w-1/4 bg-[#1f1f1f] border border-[#666] p-4 rounded-[5px]">
+              {timer}
+            </div>
           </div>
-          <div className='text-xl font-bold w-full bg-[#212529] p-4 rounded-lg'>
-            {count + 1}/{amount} - {questionsData[count]?.question}
+          <div className="sm:text-xl font-bold w-[100%] bg-[#1f1f1f] border border-[#666] p-4 rounded-[5px]">
+            {decodeEntities(questionsData[count]?.question)}
           </div>
-          <div className='grid grid-cols-2 gap-8 w-full'>
-          {answers.map((answer, i) => (
-            <button key={i} value={answer} onClick={getStatus} className='bg-[#495057] rounded-lg p-4 hover:bg-[#212529]'>
-              {answer}
-            </button>
-          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 w-full">
+            {answers.map((answer, i) => (
+              <button
+                key={i}
+                value={answer}
+                onClick={getStatus}
+                className="bg-[#1f1f1f] border border-[#666] rounded-[5px] p-4 sm:hover:bg-[#191919]"
+              >
+                {decodeEntities(answer)}
+              </button>
+            ))}
           </div>
         </div>
       )}

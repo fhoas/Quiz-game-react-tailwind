@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const LandingPage = ({
   amount,
   amountValue,
-  setAmoutValue,
+  setAmountValue,
   loading,
   setLoading,
 }) => {
@@ -23,33 +23,57 @@ const LandingPage = ({
   const navigate = useNavigate();
   const [difficultyValue, setDifficultyValue] = useState("");
   const [categoryValue, setCategoryValue] = useState("");
+
   const getDifficultyValue = (e) => {
     setDifficultyValue(e.currentTarget.value);
   };
+
   const getAmountValue = (e) => {
-    setAmoutValue(e.currentTarget.value);
+    setAmountValue(e.currentTarget.value);
   };
+
   const getCategoryValue = (e) => {
     if (Object.keys(category).indexOf(e.target.value) !== -1) {
       setCategoryValue(category[e.target.value]);
     }
   };
+
   const startGame = () => {
+    let url = "quiz/";
+
     if (difficultyValue === "") {
-      let url = `quiz/easy/1/9`;
-      navigate(url);
+      url += "easy/";
     } else {
-      let url = `quiz/${difficultyValue}/${amountValue}/${categoryValue}`;
-      console.log(url);
-      navigate(url);
+      url += `${difficultyValue}/`;
     }
+
+    if (amount === "") {
+      url += "1/";
+    } else {
+      url += `${amountValue}/`;
+    }
+
+    if (categoryValue === "") {
+      url += "9";
+    } else {
+      url += `${categoryValue}`;
+    }
+
+    console.log(url);
+    navigate(url);
   };
 
   useEffect(() => {
-    setTimeout(() => {
+    const imageLoader = new Image();
+    imageLoader.src = "https://www.pngmart.com/files/19/Quiz-Logo-PNG-HD.png";
+    imageLoader.onload = () => {
       setLoading(false);
-    }, 2000);
-  }, []);
+    };
+
+    return () => {
+      imageLoader.onload = null;
+    };
+  }, [setLoading]);
 
   return (
     <div className="flex items-center justify-center flex-col">
@@ -62,16 +86,16 @@ const LandingPage = ({
           />
         </div>
       ) : (
-        <div className="flex flex-col gap-8 p-12 bg-[#343a40] max-w-lg min-w-fit rounded-lg">
+        <div className="flex flex-col gap-8 p-6 m-4 sm:p-12 bg-[#1f1f1f] border border-[#666] max-w-lg min-w-fit rounded-[5px]">
           <img
             src="https://www.pngmart.com/files/19/Quiz-Logo-PNG-HD.png"
             alt="Logo"
           />
 
-          <div className="p-2 w-full rounded-lg bg-[#495057]">
+          <div className="p-2 w-full rounded-[5px] bg-[#1f1f1f] border border-[#666] sm:hover:border-[#999]">
             <select
               onChange={getAmountValue}
-              className="w-full border-none text-xl outline-none rounded-lg flex justify-center items-center bg-[#495057]"
+              className="w-full border-none sm:text-xl outline-none rounded-[5px] flex justify-center items-center bg-transparent"
             >
               {amount.map((dt, i) => (
                 <option key={i} value={dt}>
@@ -81,10 +105,10 @@ const LandingPage = ({
             </select>
           </div>
 
-          <div className="p-2 w-full rounded-lg bg-[#495057]">
+          <div className="p-2 w-full rounded-[5px] bg-[#1f1f1f] border border-[#666] sm:hover:border-[#999]">
             <select
               onChange={getCategoryValue}
-              className="w-full border-none text-xl outline-none rounded-lg flex justify-center items-center bg-[#495057]"
+              className="w-full border-none sm:text-xl outline-none rounded-[5px] flex justify-center items-center bg-transparent"
             >
               {Object.keys(category).map((dt, i) => (
                 <option key={i} value={dt}>
@@ -94,10 +118,10 @@ const LandingPage = ({
             </select>
           </div>
 
-          <div className="p-2 w-full rounded-lg bg-[#495057]">
+          <div className="p-2 w-full rounded-[5px] bg-[#1f1f1f] border border-[#666] sm:hover:border-[#999]">
             <select
               onChange={getDifficultyValue}
-              className="w-full border-none text-xl outline-none rounded-lg flex justify-center items-center bg-[#495057]"
+              className="w-full border-none sm:text-xl outline-none rounded-[5px] flex justify-center items-center bg-transparent capitalize"
             >
               {difficulty.map((dt, i) => (
                 <option key={i} value={dt}>
@@ -109,7 +133,7 @@ const LandingPage = ({
 
           <button
             onClick={startGame}
-            className="p-2 border-2 w-full bg-[#495057] rounded-lg font-bold hover:bg-[#343a40]"
+            className="p-2 w-full bg-[#191919] sm:text-xl border border-[#999] rounded-[5px] hover:bg-[#1f1f1f]"
           >
             Start
           </button>
