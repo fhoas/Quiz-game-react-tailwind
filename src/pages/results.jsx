@@ -1,6 +1,6 @@
 import React from "react";
 
-const Results = ({ score, amountValue, loading, setLoading }) => {
+const Results = ({ score, amountValue }) => {
   const progressWidth = `${(score / amountValue) * 100}%`;
 
   return (

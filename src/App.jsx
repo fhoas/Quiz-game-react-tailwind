@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import QuizPage from "./pages/QuizPage";
-import Results from "./pages/Results";
+import Results from "./pages/results.jsx";
 import "./App.css";
 
 function App() {

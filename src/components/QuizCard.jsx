@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const QuizCard = ({ setScore, score }) => {
+const QuizCard = ({ setScore}) => {
   const { difficulty, amount, category } = useParams();
   const [questionsData, setQuestionsData] = useState([]);
   const [answers, setAnswers] = useState([]);
